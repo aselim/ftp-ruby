@@ -1,0 +1,30 @@
+require 'aws/s3'
+
+class Helpers
+
+  def initialize()
+	AWS::S3::Base.establish_connection!(
+	  :access_key_id => "AKIAJFPIHK4NAK4WUM5A",
+	  :secret_access_key => "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"
+	  )
+#	@bucket_root = AWS::S3::Service.buckets()
+#	@list = Array.new
+#	for i in 0 .. @bucket_root.size-1
+#		puts @bucket_root[i].name
+#		@list = @list.push(@bucket_root[i].name)
+#	end
+#  return @list
+  end
+  
+  def get_dir(path)
+
+        @bucket_root = AWS::S3::Service.buckets()
+	$bucket_name = @bucket_root[0].name
+	@bucket_dir = AWS::S3::Bucket.objects($bucket_name)
+
+	for i in 0 .. @bucket_dir.size-1
+		puts "/".@bucket_dir[i].key #.split('/')
+	end
+
+  end
+end

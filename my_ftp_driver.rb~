@@ -5,22 +5,25 @@
 # Usage:
 #
 #   em-ftpd examples/fake.rb
-$:.unshift(File.expand_path('../lib/',__FILE__))
-require 'helpers'
-require 'aws/s3'
 
 class MyFTPDriver
-      Server = Helpers.new()
-  
+  FILE_ONE = "This is the first file available for download.\n\nBy James"
+  FILE_TWO = "This is the file number two.\n\n2009-03-21"
+
   def change_dir(path, &block)
-    yield true
+    yield path == "/" || path == "/files"
   end
 
   def dir_contents(path, &block)
-    @res = Array.new
-    Server.get_file(path) {|i|   @res.push(file_item("#{i}","120"))}
-    Server.get_dir(path)  {|i|   @res.push(dir_item("#{i}"))}       
-    yield @res
+    case path
+    when "/"      then
+      yield [ dir_item("files"), file_item("one.txt", FILE_ONE.bytesize) ]
+    when "/files" then
+      yield [ file_item("two.txt", FILE_TWO.bytesize) ]
+ 
+    else
+      yield []
+    end
   end
 
   def authenticate(user, pass, &block)
@@ -37,30 +40,20 @@ class MyFTPDriver
   end
 
   def get_file(path, &block)
-    
-    item = AWS::S3::S3Object.find(path[1 .. path.length-1],'em-ftpd-trial')
-    yield item.value and return
-	
-
-    #yield case path
-    #      when "/one.txt"       then FILE_ONE
-    #      when "/files/two.txt" then FILE_TWO
-    #      else
-    #        false
-    #      end
+    yield case path
+          when "/one.txt"       then FILE_ONE
+          when "/files/two.txt" then FILE_TWO
+          else
+            false
+          end
   end
 
   def put_file(path, data, &block)
-    puts path+","+data
-    file = open(data)
-    AWS::S3::S3Object.store(path,file.read,'em-ftpd-trial')
-    yield file.read.length
+    yield false
   end
 
   def delete_file(path, &block)
-    puts path
-    AWS::S3::S3Object.delete(path,'em-ftpd-trial')
-    yield true
+    yield false
   end
 
   def delete_dir(path, &block)
@@ -68,15 +61,11 @@ class MyFTPDriver
   end
 
   def rename(from, to, &block)
-    puts from+","+to
-    AWS::S3::S3Object.rename(from,to,'em-ftpd-trial')
-    yield true
+    yield false
   end
 
   def make_dir(path, &block)
-    puts path
-    AWS::S3::S3Object.store(path+'/','','em-ftpd-trial',:content_type => 'binary/octet-stream')
-    yield true
+    yield false
   end
 
   private
@@ -92,7 +81,7 @@ class MyFTPDriver
 end
 
 # configure the server
-driver     MyFTPDriver
+driver     FakeFTPDriver
 #driver_args 1, 2, 3
 #user      "ftp"
 #group     "ftp"
