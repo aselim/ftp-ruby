@@ -125,7 +125,7 @@ puts dir
 end
 
 # configure the server
-driver     MyFTPDriver
+#driver     MyFTPDriver
 #driver_args 1, 2, 3
 #user      "ftp"
 #group     "ftp"

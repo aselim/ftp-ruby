@@ -1,7 +1,7 @@
 require 'aws/s3'
 
 class Helpers
-
+module EM::FTPD
   def initialize()
 	AWS::S3::Base.establish_connection!(
 	  :access_key_id => "AKIAJFPIHK4NAK4WUM5A",
@@ -92,4 +92,5 @@ class Helpers
 		yield @file_tmp[0],@file_tmp[1]
         end
   end
+end
 end

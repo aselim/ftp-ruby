@@ -61,7 +61,7 @@ class FakeFTPDriver
 end
 
 # configure the server
-driver     FakeFTPDriver
+# driver     FakeFTPDriver
 #driver_args 1, 2, 3
 #user      "ftp"
 #group     "ftp"

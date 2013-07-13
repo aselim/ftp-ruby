@@ -10,6 +10,7 @@ require 'helpers'
 require 'aws/s3'
 
 class MyFTPDriver
+  
       Server = Helpers.new()
   
   def change_dir(path, &block)
@@ -34,7 +35,6 @@ puts dir
   def authenticate(user, pass, &block)
     @res = Array.new
     Server.get_dir('/')  {|i|   @res.push("#{i}")}
-    puts @res
     yield (@res.include? user or user == "test") && pass == "1234"
   end
 
